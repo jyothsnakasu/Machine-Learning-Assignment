@@ -1,0 +1,16 @@
+```{r include=FALSE} library(caret) library(randomForest) library(knitr) opts_chunk$set(echo = TRUE, results = 'hold') library(rpart) library(ElemStatLearn) set.seed(357)
+https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv
+https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv
+```
+Now Let's run function. {r} traindataread <- read.csv(file = "pml-training.csv", na.strings=c("", "NA", "NULL")) {r} testdataread <- read.csv(file = "pml-testing.csv", na.strings=c("", "NA", "NULL")) {r} traindataread_subset <- data.frame(traindataread[,8:11], traindataread[,37:49], traindataread[,60:68], traindataread[,84:86], total_accel_dumbbell=traindataread[,102], traindataread[,113:124], traindataread[,151:160])
+{r} inTrain <- createDataPartition(y=traindataread_subset$classe, p=0.7, list=FALSE) {r} traindata <- traindataread_subset[inTrain,] {r} traindata <- na.omit(traindata)
+```{r} testdata <- data.frame(testdataread[,8:11], testdataread[,37:49], testdataread[,60:68], testdataread[,84:86], total_accel_dumbbell=testdataread[,102], testdataread[,113:124], testdataread[,151:160])
+```
+{r}  modelFit <- randomForest(classe ~., data=traindata, do.trace=10)
+{r} modelFit
+{r} prediction <- predict(modelFit, testdata)
+{r} prediction
+{r} pml_write_files = function(x){    n = length(x)    for(i in 1:n){     filename = paste0("problem_id_",i,".txt")     write.table(x[i],file=filename,quote=FALSE,row.names=FALSE,col.names=FALSE)    }
+```{r} answers = prediction
+```
+{r} pml_write_files(answers)
